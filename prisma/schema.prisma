@@ -11,52 +11,49 @@ datasource db {
 }
 
 model User {
-  id          Int              @id @default(autoincrement())
-  email       String           @unique
-  username    String
-  password    String
-  collections CollectionUser[]
+  id                 Int              @id @default(autoincrement())
+  email              String           @unique
+  username           String
+  password           String
+  collections        CollectionUser[]
+  createdCollections Collection[]
 }
 
 model CollectionUser {
   id           Int        @id @default(autoincrement())
-  collection   Collection @relation(fields: [collectionId], references: [id])
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   collectionId String
-  user         User       @relation(fields: [userId], references: [id])
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int
 }
 
 model Collection {
   id          String           @id @default(uuid())
   name        String
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  latestEntry DateTime
+  latestEntry DateTime?
   folders     Folder[]
   users       CollectionUser[]
+  owner       User?            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     Int?
 }
 
 model Folder {
   id           Int        @id @default(autoincrement())
   name         String
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
   requests     Request[]
   collection   Collection @relation(fields: [collectionId], references: [id])
   collectionId String
 }
 
 model Request {
-  id        Int      @id @default(autoincrement())
-  name      String
-  method    Method
-  url       String
-  headers   Json
-  body      Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  folder    Folder   @relation(fields: [folderId], references: [id])
-  folderId  Int
+  id       Int    @id @default(autoincrement())
+  name     String
+  method   Method
+  url      String
+  headers  Json
+  body     Json
+  folder   Folder @relation(fields: [folderId], references: [id])
+  folderId Int
 }
 
 enum Method {

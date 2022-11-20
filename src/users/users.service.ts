@@ -65,7 +65,7 @@ export class UsersService {
   async remove(id: number) {
     try {
       return await this.prismaService.user.delete({
-        where: { id }
+        where: { id },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -76,6 +76,3 @@ export class UsersService {
     }
   }
 }
-
-
-'P2001'

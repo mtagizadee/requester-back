@@ -17,6 +17,7 @@ export class CollectionsService {
     const collection = await this.prismaService.collection.create({
       data: {
         ...createCollectionDto,
+        ownerId: userId,
         users: {
           create: { userId }
         }
@@ -35,23 +36,32 @@ export class CollectionsService {
         }
       }
     });
-    if (!collections) throw new NotFoundException('Collections are not found.');
+    if (collections.length == 0) throw new NotFoundException('Collections are not found.');
 
     return collections;
   }
 
   async findOne(id: string, userId: number) {
-    const collection = await this.prismaService.collection.findFirst({
-      where: {
-        id,
-        users: {
-          some: { userId }
+    try {
+      await this.validateUser(userId, id);
+      return this.prismaService.collection.update({
+        where: { id },
+        data: { latestEntry: new Date() },
+        include: {
+          folders: {
+            include: { requests: true }
+          }
+        }
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2001') {
+          throw new NotFoundException('Collection is not found');
         }
       }
-    })
-    if (!collection) throw new NotFoundException('Collection is not found.');
 
-    return collection;
+      throw error;
+    }
   }
 
   async update(id: string, userId: number, updateCollectionDto: UpdateCollectionDto) {
@@ -75,7 +85,9 @@ export class CollectionsService {
   async remove(id: string, userId: number) {
     try {
       await this.validateUser(userId, id);
-      return this.prismaService.collection.delete({ where: { id } });
+      return this.prismaService.collection.delete({
+        where: { id }
+      });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2001') {
