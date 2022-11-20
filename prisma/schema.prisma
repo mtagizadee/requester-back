@@ -27,12 +27,13 @@ model CollectionUser {
 }
 
 model Collection {
-  id        String           @id @default(uuid())
-  name      String
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  folders   Folder[]
-  users     CollectionUser[]
+  id          String           @id @default(uuid())
+  name        String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  latestEntry DateTime
+  folders     Folder[]
+  users       CollectionUser[]
 }
 
 model Folder {
