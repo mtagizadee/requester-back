@@ -1,5 +1,5 @@
 # Requestrer
-- [ ] Users and auth
+- [x] Users and auth
 - [ ] Collections
   - [ ] Folders
   - [ ] Requests

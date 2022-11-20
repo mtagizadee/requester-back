@@ -11,8 +11,57 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  username String
-  password String
+  id          Int              @id @default(autoincrement())
+  email       String           @unique
+  username    String
+  password    String
+  collections CollectionUser[]
+}
+
+model CollectionUser {
+  id           Int        @id @default(autoincrement())
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  collectionId String
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+}
+
+model Collection {
+  id        String           @id @default(uuid())
+  name      String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  folders   Folder[]
+  users     CollectionUser[]
+}
+
+model Folder {
+  id           Int        @id @default(autoincrement())
+  name         String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  requests     Request[]
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  collectionId String
+}
+
+model Request {
+  id        Int      @id @default(autoincrement())
+  name      String
+  method    Method
+  url       String
+  headers   Json
+  body      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  folder    Folder   @relation(fields: [folderId], references: [id])
+  folderId  Int
+}
+
+enum Method {
+  GET
+  POST
+  PUT
+  DELETE
+  PATCH
 }

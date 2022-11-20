@@ -9,8 +9,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`
     }),
-    UsersModule, PrismaModule, AuthModule],
-  controllers: [],
-  providers: [],
+    UsersModule, PrismaModule, AuthModule
+  ],
 })
 export class AppModule { }
