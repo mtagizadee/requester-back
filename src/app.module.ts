@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { CollectionsModule } from './collections/collections.module';
 import { RedisModule } from "@liaoliaots/nestjs-redis"
+import { FoldersModule } from './folders/folders.module';
 import Redis from 'ioredis';
 
 @Module({
@@ -27,7 +28,7 @@ import Redis from 'ioredis';
       }),
     }),
     UsersModule, PrismaModule,
-    AuthModule, CollectionsModule
+    AuthModule, CollectionsModule, FoldersModule
   ],
 })
 export class AppModule { }

@@ -43,6 +43,21 @@ export class CollectionsService {
   }
 
   async findOne(id: string, userId: number) {
+    const collection = await this.prismaService.collection.findFirst({
+      where: {
+        id,
+        users: {
+          some: { userId }
+        }
+      },
+      include: { folders: true }
+    });
+    if (!collection) throw new NotFoundException('Collections is not found.');
+
+    return collection;
+  }
+
+  async enter(id: string, userId: number) {
     try {
       await this.validateUser(userId, id);
       const collection = await this.prismaService.collection.update({

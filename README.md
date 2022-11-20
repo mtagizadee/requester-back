@@ -1,9 +1,9 @@
 # Requestrer
 - [x] Users and auth
 - [ ] Collections
-  - [ ] Folders
+  - [x] Folders
   - [ ] Requests
-    - [ ] Request url
-    - [ ] Request body
-    - [ ] Request headers
+    - [x] Request url
+    - [x] Request body
+    - [x] Request headers
 - [ ] Invite to collection

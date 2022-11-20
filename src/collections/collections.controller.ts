@@ -21,8 +21,8 @@ export class CollectionsController {
   }
 
   @Get(':id')
-  findOne(@GetUser('id') userId: number, @Param('id') id: string) {
-    return this.collectionsService.findOne(id, userId);
+  enter(@GetUser('id') userId: number, @Param('id') id: string) {
+    return this.collectionsService.enter(id, userId);
   }
 
   @Get('enter/latest')
