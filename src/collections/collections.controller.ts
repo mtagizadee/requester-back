@@ -25,6 +25,11 @@ export class CollectionsController {
     return this.collectionsService.findOne(id, userId);
   }
 
+  @Get('enter/latest')
+  findLatest(@GetUser('id') userId: number) {
+    return this.collectionsService.findLatestEntry(userId);
+  }
+
   @Patch(':id')
   update(
     @GetUser('id') userId: number,

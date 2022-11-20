@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { Collection } from '@prisma/client';
 
 @Injectable()
 export class CollectionsService {
@@ -44,7 +45,7 @@ export class CollectionsService {
   async findOne(id: string, userId: number) {
     try {
       await this.validateUser(userId, id);
-      return this.prismaService.collection.update({
+      const collection = await this.prismaService.collection.update({
         where: { id },
         data: { latestEntry: new Date() },
         include: {
@@ -53,6 +54,9 @@ export class CollectionsService {
           }
         }
       });
+
+      await this.saveCollectionToRedis(collection, userId);
+      return collection;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2001') {
@@ -103,5 +107,24 @@ export class CollectionsService {
     const collections = await this.findAll(userId);
     const userHasCollection = collections.some(collection => collection.id === id);
     if (!userHasCollection) throw new NotFoundException('User cannot update this collection');
+  }
+
+  async getCollectionsFromRedis() {
+    const collectionAsString = await this.redis.get('collections');
+    return JSON.parse(collectionAsString);
+  }
+
+  async saveCollectionToRedis(collection: Collection, userId: number) {
+    const collections = await this.getCollectionsFromRedis();
+    collections[userId] = collection;
+    return await this.redis.set('collections', JSON.stringify(collections));
+  }
+
+  async findLatestEntry(userId: number) {
+    const collections = await this.getCollectionsFromRedis();
+    const collection = collections[userId];
+
+    if (!collection) throw new NotFoundException('Collection is not found');
+    return collection;
   }
 }
