@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from "src/users/users.service";
 
-export type TJwtPayload = { sub: number }
+export type TJwtPayload = { email: string }
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: TJwtPayload) {
         try {
-            const user = await this.usersService.findOne(payload.sub);
+            const user = await this.usersService.findOneByEmail(payload.email);
             return user;
         } catch (error) {
             throw error;
