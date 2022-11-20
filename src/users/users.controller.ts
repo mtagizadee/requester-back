@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { User } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -15,6 +16,13 @@ export class UsersController {
     users.forEach(user => delete user.password);
     return users;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  me(@GetUser() user: User) {
+    return user;
+  }
+
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
