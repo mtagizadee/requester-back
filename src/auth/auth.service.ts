@@ -3,7 +3,8 @@ import { UsersService } from "src/users/users.service";
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from "./dto/login-user.dto";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
-
+import { verify } from 'argon2';
+import { TJwtPayload } from "./strategies/jwt.strategy";
 
 @Injectable()
 export class AuthService {
@@ -15,10 +16,16 @@ export class AuthService {
     async login(loginUserDto: LoginUserDto) {
         try {
             const user = await this.usersService.findOneByEmail(loginUserDto.email);
-            if (user.password != loginUserDto.password) throw new ForbiddenException('Wrong password.');
+            const isPasswordValid = await verify(user.password, loginUserDto.password);
+            if (!isPasswordValid) throw new ForbiddenException('Wrong password.');
 
-            const payload = { email: user.email };
-            return { access_token: this.jwtService.sign(payload) };
+            const payload: TJwtPayload = { email: user.email };
+            return {
+                access_token: this.jwtService.sign(payload, {
+                    secret: process.env.JWT_SECRET,
+                    expiresIn: '30d'
+                })
+            };
         } catch (error) {
             throw error;
         }
@@ -26,7 +33,8 @@ export class AuthService {
 
     async signup(createUserDto: CreateUserDto) {
         try {
-            return await this.usersService.create(createUserDto);
+            await this.usersService.create(createUserDto);
+            return { message: 'User signued up successfully.' };
         } catch (error) {
             throw error;
         }

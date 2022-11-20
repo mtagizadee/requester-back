@@ -3,14 +3,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-
+import { hash } from 'argon2';
 @Injectable()
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
     try {
-      return await this.prismaService.user.create({ data: createUserDto });
+      const hashedPassword = await hash(createUserDto.password);
+      return await this.prismaService.user.create({ data: { ...createUserDto, password: hashedPassword } });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -23,7 +24,6 @@ export class UsersService {
   async findAll() {
     const users = await this.prismaService.user.findMany();
     if (users.length === 0) throw new NotFoundException('Users are not found.');
-
     return users;
   }
 
