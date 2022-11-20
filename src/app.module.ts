@@ -19,7 +19,8 @@ import Redis from 'ioredis';
           port: parseInt(process.env.REDIS_PORT),
           onClientCreated: (redis: Redis) => {
             redis.on('ready', async () => {
-              await redis.set('collections', JSON.stringify({}));
+              const collections = await redis.get('collections')
+              if (!collections) await redis.set('collections', JSON.stringify({}));
             })
           }
         },

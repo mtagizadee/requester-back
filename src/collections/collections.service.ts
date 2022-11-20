@@ -120,7 +120,7 @@ export class CollectionsService {
     return await this.redis.set('collections', JSON.stringify(collections));
   }
 
-  async findLatestEntry(userId: number) {
+  async enterLatest(userId: number) {
     const collections = await this.getCollectionsFromRedis();
     const collection = collections[userId];
 

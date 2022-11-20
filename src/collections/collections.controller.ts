@@ -26,8 +26,8 @@ export class CollectionsController {
   }
 
   @Get('enter/latest')
-  findLatest(@GetUser('id') userId: number) {
-    return this.collectionsService.findLatestEntry(userId);
+  enterLatest(@GetUser('id') userId: number) {
+    return this.collectionsService.enterLatest(userId);
   }
 
   @Patch(':id')
