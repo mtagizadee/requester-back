@@ -50,8 +50,8 @@ model Request {
   name     String
   method   Method
   url      String
-  headers  Json
-  body     Json
+  headers  Json?
+  body     Json?
   folder   Folder @relation(fields: [folderId], references: [id])
   folderId Int
 }

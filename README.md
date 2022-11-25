@@ -1,8 +1,8 @@
 # Requestrer
 - [x] Users and auth
-- [ ] Collections
+- [x] Collections
   - [x] Folders
-  - [ ] Requests
+  - [x] Requests
     - [x] Request url
     - [x] Request body
     - [x] Request headers
